@@ -7,7 +7,7 @@ const __ = Symbol.for("__ENV__");
 
 @injectable()
 export class ConfigService {
-    public [__] = load({
+    [__] = load({
         GITHUB_TOKEN: String,
         MAX_PAGE: Number,
     }) as ENVMAP;
