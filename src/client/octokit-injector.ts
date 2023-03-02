@@ -84,18 +84,18 @@ export class OctokitInjector {
             const followers = this.followers.map((follower) => follower.id);
 
             // 내가 팔로우 하고 있는 사람들 중에서 나를 팔로우 하지 않는 사람들
-            const notFollowingBack = this.following.filter(
+            const NOT_FOLLOWING_BACK = this.following.filter(
                 (following) => !followers.includes(following.id)
             );
 
             // 나를 팔로우 하고 있는 사람들 중에서 내가 팔로우 하지 않는 사람들
-            const notFollowing = this.followers.filter(
+            const NOT_FOLLOWING = this.followers.filter(
                 (follower) => !following.includes(follower.id)
             );
 
             return {
-                notFollowingBack,
-                notFollowing,
+                notFollowingBack: NOT_FOLLOWING_BACK,
+                notFollowing: NOT_FOLLOWING,
             };
         } catch (e: any) {}
     }
