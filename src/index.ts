@@ -3,6 +3,11 @@ import { OctokitInjector } from "./client/octokit-injector";
 import { App } from "./core/app";
 import { ConfigService } from "./core/config-service";
 import { APP, CONFIG_SERVICE, OCTOKIT_INJECTOR } from "./core/constants";
+import { User } from "./types/follower.interface";
+interface ResultProps {
+    notFollowingBack: User[];
+    notFollwing: User[];
+}
 
 App.Listeners.on("ready", () => {
     const container = new Container({ skipBaseClassChecks: true });
@@ -15,6 +20,7 @@ App.Listeners.on("ready", () => {
 });
 
 App.Listeners.emit("ready");
-App.Listeners.on("result", (result: any) => {
+
+App.Listeners.on("result", (result: ResultProps) => {
     console.log(result);
 });

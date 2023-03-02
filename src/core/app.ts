@@ -12,7 +12,6 @@ export class App extends EventEmitter {
         private readonly octokitInjector: OctokitInjector
     ) {
         super();
-        console.log("App created");
     }
 
     async start() {

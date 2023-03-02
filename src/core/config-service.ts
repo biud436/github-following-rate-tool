@@ -13,8 +13,6 @@ export class ConfigService {
     }) as ENVMAP;
 
     constructor() {
-        console.log("ConfigService created");
-
         if (!this[__].GITHUB_TOKEN) {
             throw new Error("GITHUB_TOKEN is required");
         }
