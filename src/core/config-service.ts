@@ -14,7 +14,7 @@ export class ConfigService {
 
     constructor() {
         if (!this[__].GITHUB_TOKEN) {
-            throw new Error("GITHUB_TOKEN is required");
+            throw new Error("깃허브 토큰을 기입해주십시오.");
         }
     }
 
