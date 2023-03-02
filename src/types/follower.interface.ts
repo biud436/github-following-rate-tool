@@ -1,6 +1,7 @@
-export interface Follower {
+export interface User {
     id: number;
     login: string;
 }
 
-export interface Following extends Follower {}
+export interface Follower extends User {}
+export interface Following extends User {}

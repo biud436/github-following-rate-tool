@@ -2,14 +2,23 @@ import { inject, injectable } from "inversify";
 import { ConfigService } from "../core/config-service";
 import { CONFIG_SERVICE } from "../core/constants";
 import { Octokit } from "@octokit/core";
-import { Follower, Following } from "../types/follower.interface";
+import { User, Following } from "../types/follower.interface";
 import { App } from "../core/app";
+
+const PER_PAGE = 100;
+const HTTP_STATUS_OK = 200;
+
+const DEFAULT_OCTOKIT_HEADER = {
+    headers: {
+        "X-GitHub-Api-Version": "2022-11-28",
+    },
+};
 
 @injectable()
 export class OctokitInjector {
     private octokit!: Octokit;
 
-    private followers?: Follower[];
+    private followers?: User[];
     private following?: Following[];
 
     constructor(
@@ -24,97 +33,51 @@ export class OctokitInjector {
                 auth: this.configService.get("GITHUB_TOKEN"),
             });
 
-            this.followers = await this.getFollowers();
-            this.following = await this.getFollowing();
+            this.followers = await this.request("GET /user/followers");
+            this.following = await this.request("GET /user/following");
             const compareResult = await this.compareFollowingAndFollowers();
 
             App.Listeners.emit("result", compareResult);
         } catch (e: any) {}
     }
 
-    async getFollowers() {
-        try {
-            let currentPage = 1;
+    async request(url: "GET /user/followers" | "GET /user/following") {
+        let currentPage = 1;
 
-            // 최대 1페이지까지만 조회
-            const maxPage = this.configService.get<number>("MAX_PAGE");
-            let data: Array<Follower> = [];
+        const maxPage = this.configService.get<number>("MAX_PAGE");
+        let data: Array<User> = [];
 
-            while (currentPage <= maxPage) {
-                try {
-                    const res = await this.octokit.request(
-                        "GET /user/followers",
-                        {
-                            headers: {
-                                "X-GitHub-Api-Version": "2022-11-28",
-                            },
-                            per_page: 100,
-                            page: currentPage,
-                        }
-                    );
+        while (currentPage <= maxPage) {
+            try {
+                const res = await this.octokit.request(url, {
+                    DEFAULT_OCTOKIT_HEADER,
+                    per_page: PER_PAGE,
+                    page: currentPage,
+                });
 
-                    if (res.status === 200) {
-                        data = [
-                            ...res.data.map<Follower>((follower: any) => {
-                                return {
-                                    id: follower.id,
-                                    login: follower.login,
-                                };
-                            }),
-                            ...data,
-                        ];
+                if (res.status === HTTP_STATUS_OK) {
+                    data = [
+                        ...res.data.map<User>((follower: any) => {
+                            return {
+                                id: follower.id,
+                                login: follower.login,
+                            };
+                        }),
+                        ...data,
+                    ];
 
-                        currentPage++;
+                    currentPage++;
+
+                    if (currentPage > maxPage) {
+                        break;
                     }
-                } catch (e: any) {
-                    break;
                 }
+            } catch (e: any) {
+                break;
             }
+        }
 
-            return data;
-        } catch (e: any) {}
-    }
-
-    async getFollowing() {
-        try {
-            let currentPage = 1;
-
-            const maxPage = this.configService.get<number>("MAX_PAGE");
-            let data: Array<Following> = [];
-
-            while (currentPage <= maxPage) {
-                try {
-                    const res = await this.octokit.request(
-                        "GET /user/following",
-                        {
-                            headers: {
-                                "X-GitHub-Api-Version": "2022-11-28",
-                            },
-                            per_page: 100,
-                            page: currentPage,
-                        }
-                    );
-
-                    if (res.status === 200) {
-                        data = [
-                            ...res.data.map<Following>((following: any) => {
-                                return {
-                                    id: following.id,
-                                    login: following.login,
-                                };
-                            }),
-                            ...data,
-                        ];
-
-                        currentPage++;
-                    }
-                } catch (e: any) {
-                    break;
-                }
-            }
-
-            return data;
-        } catch (e: any) {}
+        return data;
     }
 
     async compareFollowingAndFollowers() {
