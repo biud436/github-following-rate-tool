@@ -57,7 +57,7 @@ export class OctokitInjector {
 
                 if (res.status === HTTP_STATUS_OK) {
                     data = [
-                        ...res.data.map<User>((follower: any) => {
+                        ...res.data.map<User>((follower) => {
                             return {
                                 id: follower.id,
                                 login: follower.login,
