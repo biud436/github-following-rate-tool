@@ -23,9 +23,7 @@ export class OctokitInjector {
 
     constructor(
         @inject(CONFIG_SERVICE) private readonly configService: ConfigService
-    ) {
-        console.log("OctokitInjector created");
-    }
+    ) {}
 
     async create() {
         try {
