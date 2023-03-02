@@ -67,10 +67,6 @@ export class OctokitInjector {
                     ];
 
                     currentPage++;
-
-                    if (currentPage > maxPage) {
-                        break;
-                    }
                 }
             } catch (e: any) {
                 break;
