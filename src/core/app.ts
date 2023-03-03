@@ -5,17 +5,16 @@ import { OCTOKIT_INJECTOR } from "./constants";
 
 @injectable()
 export class App extends EventEmitter {
-    public static Listeners: EventEmitter = new EventEmitter();
+  public static Listeners: EventEmitter = new EventEmitter();
 
-    constructor(
-        @inject(OCTOKIT_INJECTOR)
-        private readonly octokitInjector: OctokitInjector
-    ) {
-        super();
-    }
+  constructor(
+    @inject(OCTOKIT_INJECTOR)
+    private readonly octokitInjector: OctokitInjector
+  ) {
+    super();
+  }
 
-    async start() {
-        await this.octokitInjector.create();
-        this.emit("ready");
-    }
+  async start() {
+    await this.octokitInjector.create();
+  }
 }
