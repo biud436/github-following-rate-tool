@@ -10,24 +10,24 @@ const __ = Symbol.for("__ENV__");
 
 @injectable()
 export class ConfigService {
-  [__] = load({
-    GITHUB_TOKEN: String,
-    MAX_PAGE: Number,
-  }) as ENVMAP;
+    [__] = load({
+        GITHUB_TOKEN: String,
+        MAX_PAGE: Number,
+    }) as ENVMAP;
 
-  constructor() {
-    if (!this[__].GITHUB_TOKEN) {
-      throw new Error(
-        "Please set the environment variable named GITHUB_TOKEN in your .env file."
-      );
+    constructor() {
+        if (!this[__].GITHUB_TOKEN) {
+            throw new Error(
+                "Please set the environment variable named GITHUB_TOKEN in your .env file."
+            );
+        }
     }
-  }
 
-  load() {
-    return this[__];
-  }
+    load() {
+        return this[__];
+    }
 
-  get<T = string | number>(key: ENVKEY) {
-    return this[__][key] as T;
-  }
+    get<T = string | number>(key: ENVKEY) {
+        return this[__][key] as T;
+    }
 }
